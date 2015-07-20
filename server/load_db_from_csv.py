@@ -2,63 +2,118 @@
 
 from geohash import encode
 from server.api import data_path
-from server.models import *
+from extensions import db
 import csv
 
 def load_shops(filename):
     file_path = data_path(filename)
     with open(file_path, 'rb') as shops:
         dict_reader = csv.DictReader(shops)
+        query_text = "INSERT INTO shop "+\
+                     "(id, name, latitude, longitude, geohash) "+\
+                     "VALUES "
+        query = []
+        param = []
+        counter = 0
         for row in dict_reader:
-            shop = Shop()
+            query.append("( ?, ?, ?, ?, ? )")
 
-            shop.id         = row['id']
-            shop.name       = row['name']
-            shop.latitude   = row['lat']
-            shop.longitude  = row['lng']
+            param.append(row['id'])
+            param.append(row['name'])
+            param.append(row['lat'])
+            param.append(row['lng'])
 
-            shop.geohash    = encode(float(shop.latitude), float(shop.longitude))
-            shop.save()
+            param.append(encode(float(row['lat']), float(row['lng'])))
+            counter += 1
+            if counter == 450:
+                batch_text = query_text + ','.join(query)
+                db.engine.execute(batch_text, param)
+                query = []
+                param = []
+                counter = 0
+        query_text += ','.join(query)
+        db.engine.execute(query_text, param)
 
 
 def load_products(filename):
     file_path = data_path(filename)
     with open(file_path, 'rb') as products:
         dict_reader = csv.DictReader(products)
+        query_text = "INSERT INTO product "+\
+                     "(id, shop_id, title, popularity, quantity) "+\
+                     "VALUES "
+        query = []
+        param = []
+        counter = 0
         for row in dict_reader:
+            query.append("( ?, ?, ?, ?, ? )")
 
-            product = Product()
+            param.append(row['id'])
+            param.append(row['shop_id'])
+            param.append(repr(row['title']))
+            param.append(int( float( row['popularity'] ) * 1000 ))
+            param.append(row['quantity'])
+            counter += 1
+            if counter == 450:
+                batch_text = query_text + ','.join(query)
+                db.engine.execute(batch_text, param)
+                query = []
+                param = []
+                counter = 0
 
-            product.id          = row['id']
-            product.shop_id     = row['shop_id']
-            product.title       = repr(row['title'])
-            product.popularity  = int( float( row['popularity'] ) * 1000 )
-            product.quantity    = row['quantity']
+        query_text += ','.join(query)
+        db.engine.execute(query_text, param)
 
-            product.save()
 
 def load_tags(filename):
     file_path = data_path(filename)
     with open(file_path, 'rb') as tags:
         dict_reader = csv.DictReader(tags)
+        query_text = "INSERT INTO tag "+\
+                     "(id, tag) "+\
+                     "VALUES "
+        query = []
+        param = []
+        counter = 0
         for row in dict_reader:
-            tag = Tag()
+            query.append("( ?, ? )")
 
-            tag.id  = row['id']
-            tag.tag = row['tag']
+            param.append(row['id'])
+            param.append(row['tag'])
+            counter += 1
+            if counter == 450:
+                batch_text = query_text + ','.join(query)
+                db.engine.execute(batch_text, param)
+                query = []
+                param = []
+                counter = 0
 
-            tag.save()
+        query_text += ','.join(query)
+        db.engine.execute(query_text, param)
 
 def load_taggings(filename):
     file_path = data_path(filename)
     with open(file_path, 'rb') as taggings:
         dict_reader = csv.DictReader(taggings)
+        query_text = "INSERT INTO tagging "+\
+                     "(id, tag_id, shop_id) "+\
+                     "VALUES "
+        query = []
+        param = []
+        counter = 0
         for row in dict_reader:
+            query.append("( ?, ?, ? )")
 
-            tagging = Tagging()
+            param.append(row['id'])
+            param.append(row['tag_id'])
+            param.append(row['shop_id'])
+            counter += 1
+            if counter == 450:
+                batch_text = query_text + ','.join(query)
+                db.engine.execute(batch_text, param)
+                query = []
+                param = []
+                counter = 0
 
-            tagging.id      = row['id']
-            tagging.tag_id  = row['tag_id']
-            tagging.shop_id = row['shop_id']
-
-            tagging.save()
+        query_text += ','.join(query)
+        db.engine.execute(query_text, param)
