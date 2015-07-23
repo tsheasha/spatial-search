@@ -25,7 +25,7 @@ def load_shops(filename):
 
             param.append(encode(float(row['lat']), float(row['lng'])))
             counter += 1
-            if counter == 450:
+            if counter == 499:
                 batch_text = query_text + ','.join(query)
                 db.engine.execute(batch_text, param)
                 query = []
@@ -54,7 +54,7 @@ def load_products(filename):
             param.append(int( float( row['popularity'] ) * 1000 ))
             param.append(row['quantity'])
             counter += 1
-            if counter == 450:
+            if counter == 499:
                 batch_text = query_text + ','.join(query)
                 db.engine.execute(batch_text, param)
                 query = []
@@ -81,7 +81,7 @@ def load_tags(filename):
             param.append(row['id'])
             param.append(row['tag'])
             counter += 1
-            if counter == 450:
+            if counter == 499:
                 batch_text = query_text + ','.join(query)
                 db.engine.execute(batch_text, param)
                 query = []
@@ -108,7 +108,7 @@ def load_taggings(filename):
             param.append(row['tag_id'])
             param.append(row['shop_id'])
             counter += 1
-            if counter == 450:
+            if counter == 499:
                 batch_text = query_text + ','.join(query)
                 db.engine.execute(batch_text, param)
                 query = []

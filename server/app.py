@@ -36,7 +36,7 @@ def create_app(settings_overrides=None):
         # so will keeo this here.
         if not Shop.query.count():
             load_shops('shops.csv')
-        if not app.config['TESTING'] and not Product.query.count():
+        if not Product.query.count():
             load_products('products.csv')
         if not Tag.query.count():
             load_tags('tags.csv')

@@ -49,7 +49,7 @@ class Shop(db.Model):
         result = []
 
         # get encoding of current lat, lng
-        geohash_code = encode(float(lat), float(lng), geohash_length)
+        geohash_code = encode(lat, lng, geohash_length)
 
         # get neighbours of current geohash accoridng to radius
         # and generate sql statements for them
