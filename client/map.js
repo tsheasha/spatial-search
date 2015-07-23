@@ -172,8 +172,8 @@
              url:     search_url,
              type:    'GET',
              success : function (data) {
-                if ( data.errors) {
-                    cb(data.errors, '');
+                if ( data.error) {
+                    cb(data.error, '');
                 } else {
                     cb('', data.products);
                 }

@@ -27,7 +27,7 @@ def search():
     if tags:
         tag_ids = [ tag.id.hex for tag in Tag.query.filter(Tag.tag.in_(tags.split(','))).all()]
         if not tag_ids:
-            return jsonify({'errors': 'No results matched the tags provided'})
+            return jsonify({'error': 'No results matched the tags provided'})
 
     neighbours = Shop().get_neighbours(lat, lng, radius, tag_ids)
 
